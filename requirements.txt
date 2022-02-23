@@ -10,7 +10,7 @@ pandas
 scikit-learn
 
 # tests/linter
-black
+#black
 coverage
 flake8
 pytest

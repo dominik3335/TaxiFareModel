@@ -11,15 +11,15 @@ DIST_ARGS = dict(start_lat="pickup_latitude",
                  end_lon="dropoff_longitude")
 
 
-@simple_time_tracker
-def get_data(nrows=10000, local=False, **kwargs):
+###get data function########
+BUCKET_NAME = 'wagon-data-814-dominik3335'
+BUCKET_TRAIN_DATA_PATH = 'data/train_1k.csv'
+MODEL_NAME = 'taxifare'
+MODEL_VERSION = 'v1'
+
+def get_data():
     """method to get the training data (or a portion of it) from google cloud bucket"""
-    # Add Client() here
-    if local:
-        path = LOCAL_PATH
-    else:
-        path = AWS_BUCKET_PATH
-    df = pd.read_csv(path, nrows=nrows)
+    df = pd.read_csv(f"gs://{BUCKET_NAME}/{BUCKET_TRAIN_DATA_PATH}", nrows=1000)
     return df
 
 

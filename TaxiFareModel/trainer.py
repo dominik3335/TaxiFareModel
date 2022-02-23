@@ -2,6 +2,7 @@ import multiprocessing
 import time
 import warnings
 from tempfile import mkdtemp
+from google.cloud import storage
 
 import category_encoders as ce
 import joblib
@@ -155,10 +156,32 @@ class Trainer(object):
         rmse = compute_rmse(y_pred, y_test)
         return round(rmse, 3)
 
-    def save_model(self):
-        """Save the model into a .joblib format"""
-        joblib.dump(self.pipeline, 'model.joblib')
-        print(colored("model.joblib saved locally", "green"))
+
+STORAGE_LOCATION = 'models/simpletaxifare/model.joblib'
+BUCKET_NAME = 'wagon-data-814-dominik3335'
+def upload_model_to_gcp():
+    client = storage.Client()
+
+    bucket = client.bucket(BUCKET_NAME)
+
+    blob = bucket.blob(STORAGE_LOCATION)
+
+    blob.upload_from_filename('model.joblib')
+
+
+def save_model(reg): #reg
+    """method that saves the model into a .joblib file and uploads it on Google Storage /models folder
+    HINTS : use joblib library and google-cloud-storage"""
+
+    # saving the trained model to disk is mandatory to then beeing able to upload it to storage
+    # Implement here
+    joblib.dump(reg, 'model.joblib')
+    print("saved model.joblib locally")
+
+    # Implement here
+    upload_model_to_gcp()
+    print(f"uploaded model.joblib to gcp cloud storage under \n => {STORAGE_LOCATION}")
+
 
     ### MLFlow methods
     @memoized_property
@@ -236,4 +259,5 @@ if __name__ == "__main__":
     print(colored("############  Evaluating model ############", "blue"))
     t.evaluate()
     print(colored("############   Saving model    ############", "green"))
-    t.save_model()
+    #t.save_model()
+    save_model(t)
